@@ -1,0 +1,53 @@
+# guibuzzo.com · configuração para hospedagem Apache (cPanel, Hostinger, Locaweb, HostGator…)
+# Se a sua hospedagem for Nginx, este arquivo é ignorado e não atrapalha.
+
+# Página de erro no estilo do site
+ErrorDocument 404 /404.html
+
+# Sem listagem de pastas
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # HTTPS: ative "Forçar HTTPS" no painel da hospedagem (mais seguro que forçar aqui,
+  # porque algumas hospedagens ficam em loop de redirecionamento).
+
+  # Endereços do site antigo (WordPress) → páginas novas
+  RewriteRule ^projects/?$ /filmmaker/ [L,R=301]
+  RewriteRule ^about/?$ /#sobre [L,R=301,NE]
+  RewriteRule ^wp-admin/?.*$ / [L,R=302]
+
+  # /filmmaker → /filmmaker/ (as páginas são pastas com index.html)
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME}/index.html -f
+  RewriteRule ^(.*[^/])$ /$1/ [L,R=301]
+</IfModule>
+
+# Compressão de texto
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml application/xml text/plain
+</IfModule>
+
+# Cache: arquivos com nome versionado (_astro) ficam 1 ano; mídia 30 dias; HTML sempre revalida
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/html "access plus 0 seconds"
+  ExpiresByType image/webp "access plus 30 days"
+  ExpiresByType image/jpeg "access plus 30 days"
+  ExpiresByType image/png "access plus 30 days"
+  ExpiresByType image/svg+xml "access plus 30 days"
+  ExpiresByType video/mp4 "access plus 30 days"
+</IfModule>
+<IfModule mod_headers.c>
+  <FilesMatch "^.*\.(js|css)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Tipos de arquivo
+AddType video/mp4 .mp4
+AddType image/webp .webp
+AddType image/svg+xml .svg
