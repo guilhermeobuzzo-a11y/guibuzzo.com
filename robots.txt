@@ -3,3 +3,5 @@ Allow: /
 Disallow: /estilo
 
 Sitemap: https://guibuzzo.com/sitemap-index.xml
+
+# publicado via GitHub Pages
